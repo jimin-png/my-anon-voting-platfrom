@@ -1,0 +1,391 @@
+{
+  "info": {
+    "_postman_id": "c3e9a5c4-72b1-4d3e-961f-a3e9c5c2d3b4",
+    "name": "익명 투표 시스템 Backend API",
+    "description": "Next.js App Router로 구현된 유권자 등록, 투표 및 결과 조회 API 명세서입니다.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "1. 헬스 체크 (DB 연결 확인)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "health"
+          ]
+        },
+        "description": "MongoDB 연결 상태를 확인합니다. 통합 안정화에 필수적입니다."
+      },
+      "response": [
+        {
+          "name": "200 OK (Connected)",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "health"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"ok\": true,\n    \"db\": \"connected\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "2. 유권자 등록 (Register User)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice\",\n  \"walletAddress\": \"0xdef888\",\n  \"studentId\": \"20250098\",\n  \"email\": \"alice.test@example.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/user/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "user",
+            "register"
+          ]
+        },
+        "description": "새로운 유권자를 등록하고 투표 자격을 부여합니다. walletAddress와 studentId는 unique 해야 합니다."
+      },
+      "response": [
+        {
+          "name": "201 Created (Success)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"walletAddress\": \"0xdef888\",\n  \"studentId\": \"20250098\",\n  \"email\": \"alice.test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": true,\n    \"message\": \"유권자 등록 완료\",\n    \"data\": {\n        \"walletAddress\": \"0xdef888\",\n        \"name\": \"Alice\",\n        \"studentId\": \"20250098\"\n    }\n}"
+        },
+        {
+          "name": "409 Conflict (Duplication)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"walletAddress\": \"0xdef888\",\n  \"studentId\": \"20250098\",\n  \"email\": \"alice.test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": false,\n    \"message\": \"이미 등록된 지갑 주소이거나 학번입니다.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "3. 투표 생성 (Vote Create)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"walletAddress\": \"0xdef888\",\n  \"candidate\": \"Bob\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/vote/create",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "vote",
+            "create"
+          ]
+        },
+        "description": "등록된 유권자가 특정 후보에게 투표를 기록하고, 유권자 상태를 '투표 완료'로 업데이트합니다."
+      },
+      "response": [
+        {
+          "name": "201 Created (Success)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0xdef888\",\n  \"candidate\": \"Bob\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/vote/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "vote",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": true,\n    \"message\": \"투표 기록 완료\",\n    \"data\": {\n        \"_id\": \"658a8a487d5b882a87c1f1f1\",\n        \"walletAddress\": \"0xdef888\",\n        \"candidate\": \"Bob\"\n    }\n}"
+        },
+        {
+          "name": "403 Forbidden (Unregistered)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0xdef888\",\n  \"candidate\": \"Bob\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/vote/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "vote",
+                "create"
+              ]
+            }
+          },
+          "status": "Forbidden",
+          "code": 403,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": false,\n    \"message\": \"등록되지 않은 유권자입니다.\"\n}"
+        },
+        {
+          "name": "409 Conflict (Already Voted)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletAddress\": \"0xdef888\",\n  \"candidate\": \"Bob\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/vote/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "vote",
+                "create"
+              ]
+            }
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": false,\n    \"message\": \"이미 투표에 참여하셨습니다.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "4. 투표 결과 조회 (Get Results)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/vote/results",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "vote",
+            "results"
+          ]
+        },
+        "description": "현재까지 기록된 투표 결과를 집계하여 반환합니다."
+      },
+      "response": [
+        {
+          "name": "200 OK (Success)",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/vote/results",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "vote",
+                "results"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n    \"success\": true,\n    \"totalVotes\": 2,\n    \"results\": [\n        {\n            \"candidate\": \"Alice\",\n            \"votes\": 1\n        },\n        {\n            \"candidate\": \"Bob\",\n            \"votes\": 1\n        }\n    ]\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseURL",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    }
+  ]
+}

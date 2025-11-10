@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "allowJs": false,
+    "noEmit": true,
+    "incremental": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/models/*": [
+        "./models/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    // 🚨 Jest 테스트 환경을 인식하기 위해 "jest"를 추가합니다.
+    "types": [
+      "node",
+      "jest"
+    ],
+    "esModuleInterop": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "lib/**/*.ts",
+    "models/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "__tests__/**/*.ts"  
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "out",
+    "build"
+  ]
+}
