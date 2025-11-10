@@ -7,6 +7,7 @@ const uri = process.env.DB_URI;
 const options = {};
 
 let client: MongoClient;
+
 let clientPromise: Promise<MongoClient>;
 
 if (!uri) {
