@@ -1,6 +1,11 @@
 // lib/dbConnect.ts
 import mongoose, { Mongoose } from 'mongoose';
 
+// 🚨🚨🚨 디버깅 코드 추가 위치 (START) 🚨🚨🚨
+console.log("ENV CHECK: NEXTAUTH_SECRET length:", process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET.length : "UNDEFINED");
+console.log("ENV CHECK: CONTRACT_ADDRESS_VOTING:", process.env.CONTRACT_ADDRESS_VOTING ? "RECEIVED" : "UNDEFINED");
+// 🚨🚨🚨 디버깅 코드 추가 위치 (END) 🚨🚨🚨
+
 // 1. DB_URI 환경 변수 읽기 (없으면 빌드 중단)
 const DB_URI: string =
   process.env.DB_URI ??
