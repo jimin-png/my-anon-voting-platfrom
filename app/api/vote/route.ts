@@ -1,7 +1,8 @@
 // app/api/vote/route.ts (중복 투표 방지 로직 포함)
 
 import { NextResponse } from 'next/server';
-import { getClientPromise } from '@/lib/mongodb';
+// 🚨 1. Import 오류 수정: getClientPromise 대신 clientPromise를 default import
+import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 // 💡 IP 주소 추출 및 통일 헬퍼 함수 (로컬 테스트 환경 최적화)
@@ -20,13 +21,9 @@ const getClientIp = (request: Request) => {
 };
 
 export async function POST(request: Request) {
-  // 환경 변수 이름 통일 (이전 대화에서 DB_URI로 통일하기로 결정)
-  const uri = process.env.DB_URI;
-
-  if (!uri) {
-      // 오류 메시지 역시 DB_URI 사용으로 통일
-      return NextResponse.json({ message: "Configuration Error: DB_URI is not set." }, { status: 500 });
-  }
+  // 🚨 3. 불필요한 DB_URI 확인 로직 삭제 (lib/mongodb.ts에서 처리함)
+  // const uri = process.env.DB_URI;
+  // if (!uri) { ... }
 
   let client;
 
@@ -43,8 +40,9 @@ export async function POST(request: Request) {
     // 1. 클라이언트 IP 주소 추출
     const clientIp = getClientIp(request);
 
-    client = await getClientPromise(uri);
-    const db = client.db("voting_db");
+    // 🚨 2. DB 연결 방식 수정: clientPromise 변수를 바로 await
+    client = await clientPromise;
+    const db = client.db("voting_db"); // DB 이름은 프로젝트에 맞게 수정하세요.
     const collection = db.collection("votes");
 
     // 2. 🚨 중복 투표 검사 (핵심 로직)

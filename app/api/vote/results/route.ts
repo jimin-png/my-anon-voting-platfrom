@@ -1,7 +1,7 @@
 // app/api/vote/results/route.ts (수정된 코드)
 
 import { NextResponse } from 'next/server';
-import { getClientPromise } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 
 export async function GET() {
   // 🚨 1. 환경 변수 이름 통일 (DB_URI 사용)
@@ -19,7 +19,7 @@ export async function GET() {
   try {
     // 1. MongoDB 연결
     // getClientPromise 함수는 URI를 인수로 받도록 이전에 수정되었습니다.
-    client = await getClientPromise(uri);
+    client = await clientPromise;
     const db = client.db("voting_db");
     const collection = db.collection("votes");
 
