@@ -4,6 +4,11 @@ import { MongoClient } from 'mongodb';
 // 🚨 Next.js 서버에서 DB_URI 환경 변수를 직접 읽습니다.
 const uri = process.env.DB_URI;
 
+// 🚨🚨🚨 디버깅 코드 추가 위치 (START) 🚨🚨🚨
+console.log("RENDER DB_URI CHECK: ", uri ? "SUCCESS - VALUE RECEIVED" : "FAILURE - UNDEFINED");
+// 🚨🚨🚨 디버깅 코드 추가 위치 (END) 🚨🚨🚨
+
+
 const options = {};
 
 let client: MongoClient;
@@ -17,6 +22,7 @@ if (!uri) {
 
 // 🚨 Next.js의 개발/운영 환경 캐시 로직을 단순화하고,
 // 전역 객체에 클라이언트 연결을 캐시하는 방식을 유지합니다.
+
 
 
 if (process.env.NODE_ENV === 'development') {
