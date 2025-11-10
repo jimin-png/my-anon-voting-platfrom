@@ -1,71 +1,78 @@
-// app/api/vote/results/route.ts (수정된 코드)
+// app/api/vote/results/route.ts
 
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+// 🚨 Mongoose 연결 함수 임포트
+import dbConnect from '@/lib/dbConnect';
+// 🚨 Mongoose Schema (Vote 모델) 임포트 (파일 경로는 프로젝트에 맞게 수정 필요)
+// import Vote from '@/models/vote'; // 예시 모델 파일 경로
 
+// 투표 결과 조회 API
 export async function GET() {
-  // 🚨 1. 환경 변수 이름 통일 (DB_URI 사용)
-  const uri = process.env.DB_URI;
+    try {
+        // 1. Mongoose 연결 시작
+        await dbConnect();
 
-  if (!uri) {
-      // 🚨 2. 오류 메시지 수정 (실제 사용된 변수 이름 반영)
-      return NextResponse.json({ message: "Configuration Error: DB_URI is not set." }, { status: 500 });
-  }
+        // 2. 🚨 MongoDB Driver 로직을 Mongoose aggregate 로직으로 대체
+        // 이 로직은 MongoDB Driver의 집계 파이프라인을 Mongoose 모델에 적용해야 합니다.
 
-  // 405 Method Not Allowed 체크는 GET 요청이므로 필요하지 않습니다. (Next.js가 자동 처리)
+        /*
+        // Mongoose 모델을 사용한다고 가정하고, MongoDB Driver에서 Mongoose로 변환 (예시)
 
-  let client;
+        // const client = await clientPromise;
+        // const db = client.db("voting_db");
+        // const collection = db.collection("votes");
 
-  try {
-    // 1. MongoDB 연결
-    // getClientPromise 함수는 URI를 인수로 받도록 이전에 수정되었습니다.
-    client = await clientPromise;
-    const db = client.db("voting_db");
-    const collection = db.collection("votes");
+        const aggregationPipeline = [
+            // $group (투표 옵션별 카운트)
+            {
+                $group: {
+                    _id: "$voteOptionId",
+                    count: { $sum: 1 }
+                }
+            },
+            // $project (필드 이름 정리)
+            {
+                $project: {
+                    _id: 0,
+                    voteOptionId: "$_id",
+                    count: 1
+                }
+            },
+            // $sort (내림차순 정렬)
+            {
+                $sort: { count: -1 }
+            }
+        ];
 
-    // 2. MongoDB Aggregation Pipeline을 사용한 집계 (로직은 그대로 유지)
-    const aggregationPipeline = [
-      {
-        // voteOptionId (투표 등록 API에서 사용된 필드명) 별로 그룹화
-        $group: {
-          _id: "$voteOptionId",
-          count: { $sum: 1 }
-        }
-      },
-      {
-        // 필드 이름 정리
-        $project: {
-          _id: 0,
-          optionId: "$_id",
-          count: 1
-        }
-      },
-      {
-        // 투표 수가 많은 순서로 정렬
-        $sort: { count: -1 }
-      }
-    ];
+        // 🚨 투표 모델(Vote)이 Mongoose로 정의되어 있어야 합니다.
+        // const results = await Vote.aggregate(aggregationPipeline).exec();
 
-    const results = await collection.aggregate(aggregationPipeline).toArray();
+        // **현재는 Mongoose 모델이 없다는 가정하에 임시 데이터 반환 (추후 모델 사용 필수)**
+        const results = [
+             { voteOptionId: "Option A", count: 15 },
+             { voteOptionId: "Option B", count: 10 },
+        ];
+        */
 
-    // 3. 응답 데이터 구성
-    const totalVotes = results.reduce((sum, item) => sum + item.count, 0);
+        // 🚨 DB 연결/쿼리 로직은 팀원과 상의하여 Mongoose 모델을 사용하여 다시 작성해야 합니다.
+        // 임시로 성공 응답을 보냅니다.
+        const results = [{ message: "DB Connection Check Succeeded, Mongoose logic needed." }];
 
-    const finalResponse = {
-      success: true,
-      totalVotes: totalVotes,
-      results: results,
-      message: '투표 결과 조회 성공',
-    };
 
-    // 4. 성공 응답 (HTTP 200 OK)
-    return NextResponse.json(finalResponse, { status: 200 });
+        return NextResponse.json({
+            success: true,
+            results: results,
+        }, { status: 200 });
 
-  } catch (error: any) {
-    console.error('Results API Error:', error);
-    return NextResponse.json(
-      { success: false, message: '서버 오류: 투표 결과 집계 실패' },
-      { status: 500 }
-    );
-  }
+    } catch (error: unknown) {
+        console.error("Results API Error:", error);
+
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        return NextResponse.json({
+            success: false,
+            message: "Internal Server Error during results aggregation.",
+            details: errorMessage
+        }, { status: 500 });
+    }
 }

@@ -19,22 +19,18 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/lib/*": [
-        "./lib/*"
-      ],
-      "@/models/*": [
-        "./models/*"
-      ]
+      // 🚨 Alias 경로 수정: ./src/* 가 아닌 src/* 으로 수정 (baseUrl 때문)
+      "@/*": [ "src/*" ],
+      // 🚨 Alias 경로 수정: ./lib/* 가 아닌 lib/* 으로 수정
+      "@/lib/*": [ "lib/*" ],
+      // 🚨 Alias 경로 수정: ./models/* 가 아닌 models/* 으로 수정
+      "@/models/*": [ "models/*" ]
     },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    // 🚨 Jest 테스트 환경을 인식하기 위해 "jest"를 추가합니다.
     "types": [
       "node",
       "jest"
@@ -50,7 +46,7 @@
     "models/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "__tests__/**/*.ts"  
+    "__tests__/**/*.ts"
   ],
   "exclude": [
     "node_modules",

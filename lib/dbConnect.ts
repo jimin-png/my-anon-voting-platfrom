@@ -1,21 +1,23 @@
 // lib/dbConnect.ts
 import mongoose, { Mongoose } from 'mongoose';
 
-// 1. DB_URI 환경 변수 읽기
-// process.env.DB_URI가 없으면 Error를 던집니다.
+// 1. DB_URI 환경 변수 읽기 (없으면 빌드 중단)
 const DB_URI: string =
   process.env.DB_URI ??
   (() => {
-    // 🚨 Next.js 빌드 시점에 Error를 던져 빌드를 중단시킵니다.
     throw new Error(
       'Please define the DB_URI environment variable in your environment settings (Render/Fly.io).'
     );
   })();
 
 // 2. 글로벌 캐싱 변수 정의 및 초기화 (TypeScript 오류 처리)
+// 🚨 수정: global.mongoose 사용 시 오류 방지
+
 let cached = global.mongoose;
 if (!cached) {
   cached = { conn: null, promise: null };
+  // 🚨 수정: global.mongoose 할당 시 오류 방지
+
   global.mongoose = cached;
 }
 
@@ -39,5 +41,6 @@ export default async function dbConnect(): Promise<Mongoose> {
     throw err;
   }
 
+  // 연결이 확실히 되었음을 보장
   return cached.conn!;
 }

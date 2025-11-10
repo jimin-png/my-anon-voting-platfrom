@@ -1,16 +1,21 @@
 // lib/services/db.service.ts
 
-import { getClientPromise } from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import dbConnect from '@/lib/dbConnect';
+// 🚨 수정: ObjectId 사용을 위해 import 합니다. (MongoDB Driver 종속성)
+import { ObjectId, Db } from 'mongodb';
 
 const MAX_CONFIRMATIONS = 2; // 최대 확인 횟수 상수를 서비스로 이동
 
 /**
  * 이벤트 동기화 및 확인 로직을 처리합니다.
  */
-export async function syncEventAndConfirm(eventId: string, requestId: string, uri: string) {
-    const client = await getClientPromise(uri);
-    const db = client.db("voting_db");
+export async function syncEventAndConfirm(eventId: string, requestId: string) {
+
+    // 🚨 1. DB 연결 방식 통일: dbConnect 함수를 호출하여 Mongoose 연결 객체를 얻습니다.
+    const connection = await dbConnect();
+
+    // 🚨 2. Mongoose 연결 객체에서 Db 인스턴스 추출 (Non-null Assertion 사용)
+    const db: Db = connection.connection.db!;
     const collection = db.collection("events");
 
     // 1. 기존 이벤트 확인 (eventId 기준)
@@ -47,6 +52,8 @@ export async function syncEventAndConfirm(eventId: string, requestId: string, ur
     } else {
         // 3. 새로운 이벤트 등록 (초기 1회 확인)
         const newEventData = {
+            // 🚨 ObjectId를 사용하려면 new ObjectId()를 사용합니다.
+            _id: new ObjectId(),
             eventId: eventId,
             createdAt: new Date(),
             confirmationCount: 1,
