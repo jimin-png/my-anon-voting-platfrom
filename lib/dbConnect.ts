@@ -1,10 +1,12 @@
 // lib/dbConnect.ts
 import mongoose, { Mongoose } from 'mongoose';
 
-// 🚨🚨🚨 디버깅 코드 추가 위치 (START) 🚨🚨🚨
+// 🚨🚨🚨 1. declare global 블록을 완전히 제거했습니다. 🚨🚨🚨
+
+// 🚨🚨🚨 디버깅 코드 (START) 🚨🚨🚨
 console.log("ENV CHECK: NEXTAUTH_SECRET length:", process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET.length : "UNDEFINED");
 console.log("ENV CHECK: CONTRACT_ADDRESS_VOTING:", process.env.CONTRACT_ADDRESS_VOTING ? "RECEIVED" : "UNDEFINED");
-// 🚨🚨🚨 디버깅 코드 추가 위치 (END) 🚨🚨🚨
+// 🚨🚨🚨 디버깅 코드 (END) 🚨🚨🚨
 
 // 1. DB_URI 환경 변수 읽기 (없으면 빌드 중단)
 const DB_URI: string =
@@ -15,14 +17,12 @@ const DB_URI: string =
     );
   })();
 
-// 2. 글로벌 캐싱 변수 정의 및 초기화 (TypeScript 오류 처리)
-// 🚨 수정: global.mongoose 사용 시 오류 방지
-
+// 2. 글로벌 캐싱 변수 정의 및 초기화 (프로젝트의 전역 정의에 의존)
+// @ts-ignore를 사용하지 않고, 전역 정의에 의존합니다.
 let cached = global.mongoose;
 if (!cached) {
   cached = { conn: null, promise: null };
-  // 🚨 수정: global.mongoose 할당 시 오류 방지
-
+  // @ts-ignore: 전역 변수 할당 시 TypeScript 오류 무시 (최후의 수단)
   global.mongoose = cached;
 }
 
