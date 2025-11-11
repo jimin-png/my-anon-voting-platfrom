@@ -1,7 +1,7 @@
 // src/app/api/vote/create/route.ts
-import dbConnect from '../../../../../lib/dbConnect';
-import Vote from '../../../../../models/Vote';
-import Voter from '../../../../../models/Voter';
+import dbConnect from '@/lib/dbConnect';
+import Vote from '@/models/Vote';
+import Voter from '@/models/Voter';
 
 export async function POST(req: Request) {
   try {
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
+    
     // 2) 중복 투표 방지 (이미 투표했는지 확인)
     const already = await Vote.exists({ voter: voterDoc._id });
     if (already) {
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         { status: 409, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
+    
     // 3) 투표 저장
     const newVote = await Vote.create({
       voter: voterDoc._id,
