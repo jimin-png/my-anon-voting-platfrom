@@ -29,7 +29,8 @@ WORKDIR /app
 
 # 환경 변수 설정 (Render Secret 값으로 덮어씌워짐)
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=$PORT
+
 
 # standalone 모드 + 필요한 node_modules 복사
 COPY --from=builder /app/.next/standalone ./
@@ -37,4 +38,5 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # 서버 실행
-CMD ["node", "server.js"]
+CMD ["node", ".next/standalone/server.js"]
+

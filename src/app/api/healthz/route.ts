@@ -1,6 +1,6 @@
-// src/app/api/healthz/route.ts (Next.js 13 app directory)
+// app/healthz/route.ts
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, db: "connected" });
 }
